@@ -1,0 +1,84 @@
+name: Selenium Tests + Coverage + Static Analysis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  selenium-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
+
+  #     - name: Run Selenium tests with coverage
+  #       run: |
+  #         dotnet test tests/Selenium.Tests/Selenium.Tests.csproj \
+  #           --configuration Release \
+  #           --no-build \
+  #           --no-restore \
+  #           /p:CollectCoverage=true \
+  #           /p:CoverletOutputFormat=opencover \
+  #           /p:CoverletOutput=./coverage/ \
+  #           /p:Include="[MyApp.UI]*,[MyApp.BusinessLogic]*"
+
+  #     - name: Generate HTML coverage report
+  #       uses: danielpalme/ReportGenerator@v5
+  #       with:
+  #         reports: './coverage/coverage.opencover.xml'
+  #         targetdir: './coverage-report'
+
+  #     - name: Upload coverage report
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: coverage-report
+  #         path: coverage-report
+
+  # static-analysis:
+  #   needs: selenium-coverage
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup .NET SDK
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: '8.0.x'
+
+  #     - name: Restore & build with warnings as errors
+  #       run: |
+  #         dotnet restore
+  #         dotnet build --configuration Release /warnaserror
+
+  #     - name: Install dotnet-format
+  #       run: dotnet tool install --global dotnet-format --version 8.*
+
+  #     - name: Run formatting & style checks
+  #       run: dotnet format --verify-no-changes
+
+  #     - name: Initialize CodeQL
+  #       uses: github/codeql-action/init@v2
+  #       with:
+  #         languages: csharp
+
+  #     - name: Autobuild for CodeQL
+  #       uses: github/codeql-action/autobuild@v2
+
+  #     - name: Run CodeQL Analysis
+  #       uses: github/codeql-action/analyze@v2
